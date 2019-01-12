@@ -35,6 +35,11 @@ func NewBossServer(opts *option) *bossServer {
 }
 
 func (boss *bossServer) Main() {
+	err := boss.init()
+	if err != nil {
+		log.WithError(err).Fatal("init error")
+	}
+
 	opts := boss.opts
 	echo := echo.New()
 	em.Pprof(echo)
