@@ -6,6 +6,7 @@ import (
 
 type Administrator struct {
 	Id          int
+	ParentId    int
 	Nickname    string `gorm:"unique_index:uiq_nickname"`
 	Mobile      string `gorm:"unique_index:uiq_mobile"`
 	Password    string
@@ -14,7 +15,7 @@ type Administrator struct {
 	Contact     string
 	Address     string
 	IsDisabled  bool
-	Role        int
+	Level       int
 	CardCount   int
 	Remark      string
 	DivideModes []DivideMode
