@@ -1,0 +1,32 @@
+verbose: true
+secret: "zwczou"
+http_addr: ":8050"
+
+logger:
+    level: "debug"
+    depth: 5
+
+redis:
+    addr: "127.0.0.1:6379"
+    db: 0
+    max_idle: 2
+    idle_timeout: 40
+    token_expires: 172800
+
+database:
+    data_type: "mysql"
+    data_source: "root:root@tcp(127.0.0.1:3306)/iot?charset=utf8&parseTime=true&loc=Local"
+    max_idle_conns: 20
+    max_open_conns: 200
+
+static:
+    dir: "./web/static"
+    path: "/static"
+
+template:
+    dir: "./web/templates"
+    context:
+        base:
+            name: "名字"
+            company: "公司名字"
+            icp: "粤icp备案信息"
