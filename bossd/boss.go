@@ -53,7 +53,7 @@ func (boss *bossServer) Main() {
 	// 注册静态目录，以及模板
 	// 如果纯粹API服务可以注释掉下面这一块
 	echo.Group(opts.Static.Path, middleware.Static(opts.Static.Dir))
-	renderer, err := em.NewRenderer(opts.Template.Dir)
+	renderer, err := em.NewRenderer(opts.Template.Dir, opts.Verbose)
 	if err != nil {
 		log.WithError(err).Fatal("new renderer error")
 	}
@@ -61,7 +61,7 @@ func (boss *bossServer) Main() {
 	echo.Renderer = renderer
 
 	boss.echo = echo
-	container.App().Map(echo).Map(renderer)
+	container.App().Map(echo).Map(renderer).Map(boss.db).Map(boss.redis)
 
 	err = container.Load()
 	if err != nil {

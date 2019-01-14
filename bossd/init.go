@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"zwczou/gobase/container"
 	em "zwczou/gobase/middleware"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -52,7 +51,6 @@ func (boss *bossServer) initDatabase() error {
 	db.LogMode(boss.opts.Verbose)
 	db.SetLogger(logger{})
 	boss.db = db
-	container.App().Map(boss.db)
 	return nil
 }
 
@@ -64,7 +62,6 @@ func (boss *bossServer) initRedis() {
 		MaxIdle:     boss.opts.Redis.MaxIdle,
 		IdleTimeout: time.Duration(boss.opts.Redis.IdleTimeout) * time.Second,
 	}
-	container.App().Map(boss.redis)
 }
 
 func init() {
