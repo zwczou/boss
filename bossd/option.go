@@ -4,6 +4,7 @@ import (
 	"os"
 	"reflect"
 
+	"github.com/flosch/pongo2"
 	"github.com/onrik/logrus/filename"
 	log "github.com/sirupsen/logrus"
 	yaml "gopkg.in/yaml.v2"
@@ -17,6 +18,14 @@ type Static struct {
 type Template struct {
 	Dir     string
 	Context map[string]map[string]interface{}
+}
+
+func (t *Template) toPongoCtx() pongo2.Context {
+	out := pongo2.Context{}
+	for k, v := range t.Context {
+		out[k] = v
+	}
+	return out
 }
 
 type Database struct {

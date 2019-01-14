@@ -49,16 +49,19 @@ func (boss *bossServer) Main() {
 	echo.Use(em.Hook())
 	echo.Use(middleware.Recover())
 	echo.Use(middleware.Gzip())
-	echo.Group(opts.Static.Path, middleware.Static(opts.Static.Dir))
 
-	tempDir := opts.Template.Dir
-	renderer, err := em.NewRenderer(tempDir)
+	// 注册静态目录，以及模板
+	// 如果纯粹API服务可以注释掉下面这一块
+	echo.Group(opts.Static.Path, middleware.Static(opts.Static.Dir))
+	renderer, err := em.NewRenderer(opts.Template.Dir)
 	if err != nil {
 		log.WithError(err).Fatal("new renderer error")
 	}
+	renderer.TplSet.Globals.Update(opts.Template.toPongoCtx())
 	echo.Renderer = renderer
+
 	boss.echo = echo
-	container.App().Map(echo)
+	container.App().Map(echo).Map(renderer)
 
 	err = container.Load()
 	if err != nil {
