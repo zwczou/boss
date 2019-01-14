@@ -5,12 +5,18 @@ import (
 	"zwczou/gobase/container"
 
 	"github.com/codegangsta/inject"
+	"github.com/gomodule/redigo/redis"
+	"github.com/jinzhu/gorm"
+	"github.com/labstack/echo"
 )
 
 type adminServer struct {
 	sync.RWMutex
 	inject.Injector
 	name     string
+	db       *gorm.DB
+	redis    *redis.Pool
+	echo     *echo.Echo
 	exitChan chan struct{}
 }
 
@@ -27,7 +33,20 @@ func (as *adminServer) Name() string {
 	return as.name
 }
 
+// 通过反射赋值需要的数据
+func (as *adminServer) assign(db *gorm.DB, redis *redis.Pool, echo *echo.Echo) {
+	as.db = db
+	as.redis = redis
+	as.echo = echo
+}
+
 func (as *adminServer) Load(app *container.Container) error {
+	as.SetParent(app.Injector)
+	_, err := as.Invoke(as.assign)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 
