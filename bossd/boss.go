@@ -40,6 +40,9 @@ func (boss *bossServer) Main() {
 		log.WithError(err).Fatal("init error")
 	}
 
+	echo.NotFoundHandler = er.NotFoundHandler
+	echo.MethodNotAllowedHandler = er.MethodNotAllowedHandler
+
 	opts := boss.opts
 	echo := echo.New()
 	em.Pprof(echo)
