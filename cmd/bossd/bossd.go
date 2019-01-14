@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 	"zwczou/boss/bossd"
+	_ "zwczou/boss/pkg/admin"
 
 	log "github.com/sirupsen/logrus"
 )

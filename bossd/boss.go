@@ -66,7 +66,9 @@ func (boss *bossServer) Main() {
 	renderer.TplSet.Globals.Update(opts.Template.toPongoCtx())
 	e.Renderer = renderer
 
+	boss.Lock()
 	boss.echo = e
+	boss.Unlock()
 	container.App().Map(e).Map(renderer).Map(boss.db).Map(boss.redis)
 
 	err = container.Load()
@@ -81,7 +83,7 @@ func (boss *bossServer) Main() {
 }
 
 func (boss *bossServer) Exit() {
-	log.Infof("server exiting")
 	close(boss.exitChan)
 	container.Exit()
+	log.Infof("server exiting")
 }

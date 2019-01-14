@@ -50,18 +50,23 @@ func (boss *bossServer) initDatabase() error {
 	db.DB().SetMaxIdleConns(dbopts.MaxIdleConns)
 	db.LogMode(boss.opts.Verbose)
 	db.SetLogger(logger{})
+	boss.Lock()
 	boss.db = db
+	boss.Unlock()
 	return nil
 }
 
 func (boss *bossServer) initRedis() {
-	boss.redis = &redis.Pool{
+	redis := &redis.Pool{
 		Dial: func() (redis.Conn, error) {
 			return redis.Dial("tcp", boss.opts.Redis.Addr, redis.DialDatabase(boss.opts.Redis.DB))
 		},
 		MaxIdle:     boss.opts.Redis.MaxIdle,
 		IdleTimeout: time.Duration(boss.opts.Redis.IdleTimeout) * time.Second,
 	}
+	boss.Lock()
+	boss.redis = redis
+	boss.Unlock()
 }
 
 func init() {
