@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type Administrator struct {
+type Partner struct {
 	Id          int
 	ParentId    int
 	Nickname    string `gorm:"unique_index:uiq_nickname"`
@@ -19,24 +19,26 @@ type Administrator struct {
 	CardCount   int
 	Remark      string
 	DivideModes []DivideMode
-	Roles       []Role       `gorm:"many2many:admin_role_admin"`
-	Permissions []Permission `gorm:"many2many:admin_admin_permissions"`
+	Roles       []Role       `gorm:"many2many:admin_role_users"`
+	Permissions []Permission `gorm:"many2many:admin_user_permissions"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
 
-func (p Administrator) TableName() string {
-	return "administrators"
+func (p Partner) TableName() string {
+	return "admin_users"
 }
 
+type Administrator = Partner
+
 type DivideMode struct {
-	Id              int
-	AdministratorId int `gorm:"index:"idx_admin_id"`
-	Operator        int `gorm:"type:tinyint"`
-	Type            int `gorm:"type:tinyint"`
-	Value           float64
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
+	Id        int
+	PartnerId int `gorm:"index:idx_partner_id"`
+	Operator  int `gorm:"type:tinyint"`
+	Type      int `gorm:"type:tinyint"`
+	Value     float64
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (dm DivideMode) TableName() string {
@@ -44,14 +46,14 @@ func (dm DivideMode) TableName() string {
 }
 
 type Role struct {
-	Id             int
-	Name           string
-	Slug           string
-	Administrators []Administrator `gorm:"many2many:admin_role_admins"`
-	Permissions    []Permission    `gorm:"many2many:admin_role_permissions"`
-	Menus          []Menu          `gorm:"many2many:admin_role_menus"`
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
+	Id          int
+	Name        string
+	Slug        string
+	Partners    []Partner    `gorm:"many2many:admin_role_users"`
+	Permissions []Permission `gorm:"many2many:admin_role_permissions"`
+	Menus       []Menu       `gorm:"many2many:admin_role_menus"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }
 
 func (r Role) TableName() string {
@@ -59,19 +61,19 @@ func (r Role) TableName() string {
 }
 
 type Permission struct {
-	Id             int
-	Name           string `gorm:"size:80"`
-	Slug           string `gorm:"size:80;unique_index:uiq_slug"`
-	HttpMethod     string
-	HttpPath       string
-	CreatedAt      time.Time
-	UpdatedAt      time.Time
-	Roles          []Role          `gorm:"many2many:admin_role_permissions"`
-	Administrators []Administrator `gorm:"many2many:admin_admin_permissions"`
+	Id         int
+	Name       string `gorm:"size:80"`
+	Slug       string `gorm:"size:80;unique_index:uiq_slug"`
+	HttpMethod string
+	HttpPath   string
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+	Roles      []Role    `gorm:"many2many:admin_role_permissions"`
+	Partners   []Partner `gorm:"many2many:admin_user_permissions"`
 }
 
 func (p Permission) TableName() string {
-	return "admin_permissions"
+	return "user_permissions"
 }
 
 type Menu struct {
