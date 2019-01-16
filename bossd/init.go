@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"zwczou/boss/model"
 	em "zwczou/gobase/middleware"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -53,6 +54,14 @@ func (boss *bossServer) initDatabase() error {
 	boss.Lock()
 	boss.db = db
 	boss.Unlock()
+
+	db.AutoMigrate(&model.Administrator{}, &model.Role{}, &model.Permission{}, &model.Menu{})
+	db.AutoMigrate(&model.DivideMode{})
+	db.AutoMigrate(&model.Card{}, &model.PartnerCard{}, &model.User{}, &model.UserCard{})
+	db.AutoMigrate(&model.Auth{}, &model.AuthTrack{})
+	db.AutoMigrate(&model.Plan{}, &model.CardPlan{}, &model.PartnerPlan{})
+	db.AutoMigrate(&model.Order{}, &model.Comission{})
+	db.AutoMigrate(&model.Task{})
 	return nil
 }
 
