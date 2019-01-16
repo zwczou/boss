@@ -22,7 +22,6 @@ type Partner struct {
 	Roles       []Role       `gorm:"many2many:admin_role_users"`
 	Permissions []Permission `gorm:"many2many:admin_user_permissions"`
 	Cards       []Card       `gorm:"many2many:partner_cards"`
-	Remark      *Remark      `json:",omitempty" gorm:"polymorphic:Owner"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

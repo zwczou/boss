@@ -63,6 +63,7 @@ type Card struct {
 	Orders             []Order
 	Partners           []Partner `gorm:"many2many:partner_cards"`
 	Users              []User    `gorm:"many2many:user_cards"`
+	Remark             *Remark   `json:",omitempty""`
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
 }
