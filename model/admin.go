@@ -17,10 +17,12 @@ type Partner struct {
 	IsDisabled  bool
 	Level       int
 	CardCount   int
-	Remark      string
+	Note        string
 	DivideModes []DivideMode
 	Roles       []Role       `gorm:"many2many:admin_role_users"`
 	Permissions []Permission `gorm:"many2many:admin_user_permissions"`
+	Cards       []Card       `gorm:"many2many:partner_cards"`
+	Remark      *Remark      `json:",omitempty" gorm:"polymorphic:Owner"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
@@ -30,20 +32,6 @@ func (p Partner) TableName() string {
 }
 
 type Administrator = Partner
-
-type DivideMode struct {
-	Id        int
-	PartnerId int `gorm:"index:idx_partner_id"`
-	Operator  int `gorm:"type:tinyint"`
-	Type      int `gorm:"type:tinyint"`
-	Value     float64
-	CreatedAt time.Time
-	UpdatedAt time.Time
-}
-
-func (dm DivideMode) TableName() string {
-	return "divide_modes"
-}
 
 type Role struct {
 	Id          int

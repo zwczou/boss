@@ -61,6 +61,8 @@ type Card struct {
 	AuthorizedAt       *time.Time
 	CardPlans          []CardPlan
 	Orders             []Order
+	Partners           []Partner `gorm:"many2many:partner_cards"`
+	Users              []User    `gorm:"many2many:user_cards"`
 	CreatedAt          time.Time
 	UpdatedAt          time.Time
 }
@@ -101,34 +103,6 @@ func (c *Card) IsUnlimited() bool {
 		}
 	}
 	return false
-}
-
-type PartnerCard struct {
-	Id        int
-	CardId    int `gorm:"index:idx_card_id"`
-	PartnerId int `gorm:"index:idx_partner_id"`
-	Operator  int `gorm:"type:tinyint"`
-	Source    int `gorm:"type:tinyint"`
-	Remark    string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-}
-
-func (pc PartnerCard) TableName() string {
-	return "partner_cards"
-}
-
-type UserCard struct {
-	Id        int
-	CardId    int `gorm:"index:idx_card_id"`
-	UserId    int `gorm:"index:id_user_id"`
-	Remark    string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-}
-
-func (uc UserCard) TableName() string {
-	return "user_cards"
 }
 
 type Auth struct {

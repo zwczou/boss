@@ -15,6 +15,8 @@ type User struct {
 	Nickname  *string `gorm:"unique_index:uiq_nickname"`
 	Mobile    *string `gorm:"unique_index:uiq_mobile"`
 	Password  string
+	Cards     []Card  `gorm:"many2many:user_cards"`
+	Remark    *Remark `json:",omitempty" gorm:"polymorphic:Owner"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
