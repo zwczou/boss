@@ -76,6 +76,18 @@ func (o *Order) BeforeCreate(scope *gorm.Scope) {
 	o.BeforeSave(scope)
 }
 
+func (o *Order) Paid() {
+	var now = time.Now()
+	o.Status = OrderPaid
+	o.PaidAt = &now
+}
+
+func (o *Order) Closed() {
+	var now = time.Now()
+	o.Status = OrderClosed
+	o.ClosedAt = &now
+}
+
 type Comission struct {
 	Id        int
 	PartnerId int      `gorm:"unique_index:uiq_partner_order"`

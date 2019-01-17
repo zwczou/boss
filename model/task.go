@@ -57,3 +57,13 @@ func (t *Task) BeforeSave(scope *gorm.Scope) {
 func (t *Task) BeforeCreate(scope *gorm.Scope) {
 	t.BeforeSave(scope)
 }
+
+func (t *Task) Started() {
+	var now = time.Now()
+	t.Status = TaskStarted
+	t.StartedAt = &now
+}
+
+func (t *Task) Done() {
+	t.Status = TaskDone
+}
