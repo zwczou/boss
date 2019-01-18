@@ -6,6 +6,7 @@ import (
 	"time"
 	"zwczou/boss/model"
 	em "zwczou/gobase/middleware"
+	"zwczou/gobase/trans"
 
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 
@@ -53,6 +54,7 @@ func (boss *bossServer) initDatabase() error {
 	db.SetLogger(logger{})
 	boss.Lock()
 	boss.db = db
+	boss.trans = trans.New(db)
 	boss.Unlock()
 
 	db.AutoMigrate(&model.Administrator{}, &model.Role{}, &model.Permission{}, &model.Menu{})

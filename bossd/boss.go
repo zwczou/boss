@@ -8,6 +8,7 @@ import (
 	"zwczou/gobase/container"
 	"zwczou/gobase/er"
 	em "zwczou/gobase/middleware"
+	"zwczou/gobase/trans"
 
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/gomodule/redigo/redis"
@@ -23,6 +24,7 @@ type bossServer struct {
 	db       *gorm.DB
 	redis    *redis.Pool
 	echo     *echo.Echo
+	trans    *trans.Trans
 	startAt  time.Time
 	exitChan chan struct{}
 }
