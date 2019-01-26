@@ -92,7 +92,7 @@ func (client *OperatorClient) Loop() (err error) {
 	log.WithFields(fields).Info("connected")
 
 	for {
-		client.SetReadDeadline(time.Now().Add(time.Minute))
+		client.SetReadDeadline(time.Now().Add(time.Minute * 4))
 		_, msg, err := client.ReadMessage()
 		if err != nil {
 			fields["error"] = err.Error()
