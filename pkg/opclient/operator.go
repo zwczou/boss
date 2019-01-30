@@ -5,22 +5,11 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-	em "zwczou/gobase/middleware"
 	"zwczou/operator/pkg/def"
 
 	"github.com/gorilla/websocket"
-	jsoniter "github.com/json-iterator/go"
-	"github.com/json-iterator/go/extra"
 	log "github.com/sirupsen/logrus"
 )
-
-var json = jsoniter.ConfigCompatibleWithStandardLibrary
-
-func init() {
-	extra.RegisterFuzzyDecoders()
-	em.SetNamingStrategy(em.LowerCaseWithUnderscores)
-	em.RegisterTimeAsFormatCodec("2006-01-02 15:04:05")
-}
 
 type Packet = def.Packet
 
