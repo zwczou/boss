@@ -47,6 +47,12 @@ func (as *adminServer) Load(app *container.Container) error {
 		return err
 	}
 
+	admin := as.echo.Group("/admin")
+	{
+		admin.GET("/login", as.loginView)
+		admin.POST("/login", as.loginView)
+	}
+
 	return nil
 }
 
