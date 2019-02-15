@@ -63,8 +63,15 @@
                   <span class="d-block text-muted">输入您的账号信息</span>
                 </div>
 
+                {% for key, val in messages %}
+                <div class="alert alert-{{ key }} alert-styled-left alert-dismissible">
+                  <button type="button" class="close" data-dismiss="alert"><span>×</span></button>
+                  {{ val }}
+                </div>
+                {% endfor %}
+
                 <div class="form-group form-group-feedback form-group-feedback-left">
-                  <input name="username" type="text" class="form-control" placeholder="用户名">
+                  <input name="username" type="text" class="form-control" placeholder="用户名" value="{{ form.Username }}">
                   <div class="form-control-feedback">
                     <i class="icon-user text-muted"></i>
                   </div>

@@ -15,4 +15,5 @@ var (
 
 	AdminToken   = "admin.token"
 	TokenExpires = 86400 * 7
+	RedirectUrl  = "/"
 )

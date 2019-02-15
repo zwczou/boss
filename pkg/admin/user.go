@@ -37,9 +37,19 @@ func (as *adminServer) loginView(ctx echo.Context) error {
 
 	data := pongo2.Context{"form": form}
 	if user.Id == 0 || !user.CheckPassword(form.Password) {
-		data = tools.Flash(data, "danger", "用户名或密码错误")
+		data = tools.Flash(data, "warning", "用户名或密码错误")
 		return ctx.Render(http.StatusOK, "admin/login.html", data)
 	}
-	data = tools.Flash(data, "danger", "登录成功")
-	return ctx.Render(http.StatusOK, "admin/login.html", data)
+
+	next := ctx.QueryParam("next")
+	if next == "" {
+		next = RedirectUrl
+	}
+	token, err := as.genToken(&user)
+	if err != nil {
+		data = tools.Flash(data, "warning", "服务器内部错误")
+		return ctx.Render(http.StatusOK, "admin/login.html", data)
+	}
+	ctx.SetCookie(&http.Cookie{Name: AdminToken, Value: token, Path: "/"})
+	return ctx.Redirect(http.StatusFound, next)
 }

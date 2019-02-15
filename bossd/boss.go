@@ -80,7 +80,7 @@ func (boss *bossServer) Main() {
 
 	go func() {
 		log.WithField("http_addr", opts.HTTPAddr).Info("start http server")
-		gracehttp.Serve(&http.Server{Addr: opts.HTTPAddr, Handler: e})
+		log.Fatal(gracehttp.Serve(&http.Server{Addr: opts.HTTPAddr, Handler: e}))
 	}()
 }
 

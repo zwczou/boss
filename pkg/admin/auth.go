@@ -9,7 +9,7 @@ import (
 )
 
 // 生成token
-func (as *adminServer) genToken(user *model.User) (token string, err error) {
+func (as *adminServer) genToken(user *model.Administrator) (token string, err error) {
 	rc := as.redis.Get()
 	defer rc.Close()
 	ut := newUserToken(rc, TokenExpires)
