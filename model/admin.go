@@ -1,6 +1,9 @@
 package model
 
 import (
+	"net/http"
+	"regexp"
+	"strings"
 	"time"
 )
 
@@ -31,6 +34,56 @@ func (a Administrator) CheckPassword(pwd string) bool {
 
 func (a *Administrator) SetPassword(pwd string) {
 	a.Password = hashAndSalt([]byte(pwd))
+}
+
+func (a *Administrator) IsSuperUser() bool {
+	if a.Id == 1 {
+		return true
+	}
+	for _, role := range a.Roles {
+		if role.Id == 1 {
+			return true
+		}
+	}
+	return false
+}
+
+// 获取所有权限
+func (a *Administrator) Permission() (permissions []Permission) {
+	permissions = append(permissions, a.Permissions...)
+	var exists = make(map[int]bool)
+	for _, role := range a.Roles {
+		for _, m := range role.Permissions {
+			if _, ok := exists[m.Id]; !ok {
+				permissions = append(permissions, m)
+				exists[m.Id] = true
+			}
+		}
+	}
+	return
+}
+
+// 检测请求权限
+// 先检测请求方法
+// 然后检测请求路径
+func (a *Administrator) Check(req *http.Request) bool {
+	if a.IsSuperUser() {
+		return true
+	}
+
+	r := strings.NewReplacer("*", ".*", "?", ".?")
+	for _, perm := range a.Permission() {
+		if perm.HttpMethod == "" || strings.Contains(perm.HttpMethod, req.Method) {
+			paths := strings.Split(perm.HttpPath, "\n")
+			for _, path := range paths {
+				path = r.Replace(strings.TrimSpace(path))
+				if regexp.MustCompile(path).FindString(req.URL.Path) == req.URL.Path {
+					return true
+				}
+			}
+		}
+	}
+	return false
 }
 
 type Role struct {
