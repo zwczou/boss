@@ -58,12 +58,6 @@ func (boss *bossServer) initDatabase() error {
 	boss.Unlock()
 
 	db.AutoMigrate(&model.Administrator{}, &model.Role{}, &model.Permission{}, &model.Menu{})
-	db.AutoMigrate(&model.DivideMode{})
-	db.AutoMigrate(&model.Card{}, &model.User{})
-	db.AutoMigrate(&model.Auth{}, &model.AuthTrack{})
-	db.AutoMigrate(&model.Plan{}, &model.CardPlan{}, &model.PartnerPlan{})
-	db.AutoMigrate(&model.Order{}, &model.Comission{})
-	db.AutoMigrate(&model.Task{}, &model.Remark{})
 	return nil
 }
 
