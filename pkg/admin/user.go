@@ -9,6 +9,7 @@ import (
 
 	"github.com/flosch/pongo2"
 	"github.com/labstack/echo"
+	log "github.com/sirupsen/logrus"
 )
 
 type loginViewForm struct {
@@ -26,8 +27,8 @@ func (as *adminServer) loginView(ctx echo.Context) error {
 	if err := tools.Validate(ctx, &form); err != nil {
 		return er.ErrInvalidArgs
 	}
-	db := as.db
 
+	db := as.db
 	var user model.Administrator
 	if _, err := strconv.Atoi(form.Username); err == nil && len(form.Username) == 11 {
 		db.Where("mobile = ?", form.Username).First(&user)
@@ -52,4 +53,60 @@ func (as *adminServer) loginView(ctx echo.Context) error {
 	}
 	ctx.SetCookie(&http.Cookie{Name: AdminToken, Value: token, Path: "/"})
 	return ctx.Redirect(http.StatusFound, next)
+}
+
+type updateUserPasswordViewForm struct {
+	UserId  int    `query:"id" form:"id" validate:"min=1"`
+	OldPass string `form:"old_pass" validate:"min=6"`
+	NewPass string `form:"new_pass" validate:"min=6"`
+}
+
+func (as *adminServer) updateUserPasswordView(ctx echo.Context) error {
+	var form updateUserPasswordViewForm
+	if err := tools.Bind(ctx, &form); err != nil {
+		data := tools.Flash(nil, "warning", "参数错误")
+		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
+	}
+
+	var user model.Administrator
+	if user.Id == form.UserId || form.UserId == 0 {
+		user = *ctx.Get(ContextUser).(*model.Administrator)
+	} else {
+		err := as.db.Scopes(model.QueryAdministratorScope).First(&user).Error
+		if err != nil {
+			log.WithError(err).WithField("form", form).Error("query users error")
+			data := tools.Flash(nil, "warning", "服务器内部错误")
+			return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
+		}
+	}
+
+	data := pongo2.Context{
+		"user": user,
+		"form": form,
+	}
+	if ctx.Request().Method == echo.GET {
+		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
+	}
+
+	if ctx.Request().Method == echo.POST {
+		if err := ctx.Validate(&form); err != nil {
+			log.WithError(err).Warn("validate error")
+			data := tools.Flash(data, "warning", "参数错误")
+			return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
+		}
+	}
+
+	if !user.CheckPassword(form.OldPass) {
+		data = tools.Flash(data, "warning", "老密码输入有误")
+		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
+	}
+	if form.OldPass == form.NewPass {
+		data = tools.Flash(data, "info", "密码修改成功!")
+		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
+	}
+	user.SetPassword(form.NewPass)
+	as.db.Model(&user).Select("password").Update(&user)
+	data = tools.Flash(data, "info", "密码修改成功!")
+	return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
+	return nil
 }
