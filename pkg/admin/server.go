@@ -2,6 +2,7 @@ package admin
 
 import (
 	"sync"
+	"zwczou/boss/pkg/def"
 	"zwczou/gobase/container"
 
 	"github.com/codegangsta/inject"
@@ -41,6 +42,7 @@ func (as *adminServer) assign(db *gorm.DB, redis *redis.Pool, echo *echo.Echo) {
 }
 
 func (as *adminServer) Load(app *container.Container) error {
+	app.Map(def.CheckLoginFunc(as.CheckLogin))
 	as.SetParent(app.Injector)
 	_, err := as.Invoke(as.assign)
 	if err != nil {
