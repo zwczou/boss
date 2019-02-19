@@ -103,7 +103,7 @@ func (as *adminServer) updateUserPasswordView(ctx echo.Context) error {
 	}
 
 	user.SetPassword(form.NewPass)
-	as.db.Model(&user).Select("password").Update(&user)
+	as.db.Select("password", "updated_at").Save(&user)
 	data = tools.Flash(data, "info", "密码修改成功!")
 	return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
 	return nil
