@@ -88,14 +88,11 @@ func (as *adminServer) updateUserPasswordView(ctx echo.Context) error {
 		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
 	}
 
-	if ctx.Request().Method == echo.POST {
-		if err := ctx.Validate(&form); err != nil {
-			log.WithError(err).Warn("validate error")
-			data := tools.Flash(data, "warning", "参数错误")
-			return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
-		}
+	if err := ctx.Validate(&form); err != nil {
+		log.WithError(err).Warn("validate error")
+		data := tools.Flash(data, "warning", "参数错误")
+		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
 	}
-
 	if !user.CheckPassword(form.OldPass) {
 		data = tools.Flash(data, "warning", "老密码输入有误")
 		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
@@ -104,6 +101,7 @@ func (as *adminServer) updateUserPasswordView(ctx echo.Context) error {
 		data = tools.Flash(data, "info", "密码修改成功!")
 		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
 	}
+
 	user.SetPassword(form.NewPass)
 	as.db.Model(&user).Select("password").Update(&user)
 	data = tools.Flash(data, "info", "密码修改成功!")
