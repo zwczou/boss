@@ -63,7 +63,8 @@ func (as *adminServer) CheckLogin(isJson bool) echo.MiddlewareFunc {
 				"user_id": userId,
 			}
 			user.Id = userId
-			if err := as.db.First(&user).Error; err != nil {
+			err = as.db.Scopes(model.QueryAdministratorScope).Find(&user).Error
+			if err != nil {
 				fields["error"] = err
 				log.WithFields(fields).Warn("find user error")
 				if isJson {

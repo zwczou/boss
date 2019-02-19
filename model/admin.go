@@ -91,7 +91,7 @@ func (a *Administrator) Check(req *http.Request) bool {
 	return false
 }
 
-// 获取管理员订单
+// 获取管理员菜单
 func (a *Administrator) Menu() (menus Menus) {
 	if a.IsSuperUser() {
 		db.Find(&menus)
