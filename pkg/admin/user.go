@@ -98,13 +98,13 @@ func (as *adminServer) updateUserPasswordView(ctx echo.Context) error {
 		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
 	}
 	if form.OldPass == form.NewPass {
-		data = tools.Flash(data, "info", "密码修改成功!")
+		data = tools.Flash(data, "success", "密码修改成功!")
 		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
 	}
 
 	user.SetPassword(form.NewPass)
 	as.db.Select("password", "updated_at").Save(&user)
-	data = tools.Flash(data, "info", "密码修改成功!")
+	data = tools.Flash(data, "success", "密码修改成功!")
 	return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
 	return nil
 }
