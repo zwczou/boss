@@ -106,5 +106,4 @@ func (as *adminServer) updateUserPasswordView(ctx echo.Context) error {
 	as.db.Select("password", "updated_at").Save(&user)
 	data = tools.Flash(data, "success", "密码修改成功!")
 	return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
-	return nil
 }

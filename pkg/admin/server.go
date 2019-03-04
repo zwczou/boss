@@ -53,6 +53,9 @@ func (as *adminServer) Load(app *container.Container) error {
 	{
 		admin.GET("/login", as.loginView)
 		admin.POST("/login", as.loginView)
+		admin.GET("/layout", func(ctx echo.Context) error {
+			return ctx.Render(200, "admin/layout.html", nil)
+		})
 	}
 
 	return nil

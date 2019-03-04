@@ -30,3 +30,7 @@ template:
             name: "名字"
             company: "公司名字"
             icp: "粤icp备案信息"
+        url:
+            user_update: "/admin/users/update"
+            user_update_password: "/admin/users/update_password"
+            user_logout: "/adminm/logout"
