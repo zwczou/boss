@@ -19,8 +19,10 @@ type loginViewForm struct {
 }
 
 func (as *adminServer) loginView(ctx echo.Context) error {
-	if ctx.Request().Method == echo.GET {
-		return ctx.Render(http.StatusOK, "admin/login.html", nil)
+	template := "admin/login.html"
+	isGet := ctx.Request().Method == echo.GET
+	if isGet {
+		return ctx.Render(http.StatusOK, template, nil)
 	}
 
 	var form loginViewForm
@@ -39,17 +41,20 @@ func (as *adminServer) loginView(ctx echo.Context) error {
 	data := pongo2.Context{"form": form}
 	if user.Id == 0 || !user.CheckPassword(form.Password) {
 		data = tools.Flash(data, "warning", "用户名或密码错误")
-		return ctx.Render(http.StatusOK, "admin/login.html", data)
+		return ctx.Render(http.StatusOK, template, data)
 	}
 
 	next := ctx.QueryParam("next")
 	if next == "" {
 		next = RedirectUrl
 	}
+	if as.redirectUrl != nil {
+		next = as.redirectUrl()
+	}
 	token, err := as.genToken(&user)
 	if err != nil {
 		data = tools.Flash(data, "warning", "服务器内部错误")
-		return ctx.Render(http.StatusOK, "admin/login.html", data)
+		return ctx.Render(http.StatusOK, template, data)
 	}
 	ctx.SetCookie(&http.Cookie{Name: AdminToken, Value: token, Path: "/"})
 	return ctx.Redirect(http.StatusFound, next)
@@ -62,10 +67,13 @@ type updateUserPasswordViewForm struct {
 }
 
 func (as *adminServer) updateUserPasswordView(ctx echo.Context) error {
+	template := "admin/users_update_password.html"
+	isGet := ctx.Request().Method == echo.GET
+
 	var form updateUserPasswordViewForm
 	if err := tools.Bind(ctx, &form); err != nil {
 		data := tools.Flash(nil, "warning", "参数错误")
-		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
+		return ctx.Render(http.StatusOK, template, data)
 	}
 
 	var user model.Administrator
@@ -76,35 +84,31 @@ func (as *adminServer) updateUserPasswordView(ctx echo.Context) error {
 		if err != nil {
 			log.WithError(err).WithField("form", form).Error("query users error")
 			data := tools.Flash(nil, "warning", "服务器内部错误")
-			return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
+			return ctx.Render(http.StatusOK, template, data)
 		}
 	}
 
-	data := pongo2.Context{
-		"user": user,
-		"form": form,
-	}
-	if ctx.Request().Method == echo.GET {
-		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
+	data := pongo2.Context{"user": user, "form": form}
+	if isGet {
+		return ctx.Render(http.StatusOK, template, data)
 	}
 
 	if err := ctx.Validate(&form); err != nil {
 		log.WithError(err).Warn("validate error")
 		data := tools.Flash(data, "warning", "参数错误")
-		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
+		return ctx.Render(http.StatusOK, template, data)
 	}
 	if !user.CheckPassword(form.OldPass) {
 		data = tools.Flash(data, "warning", "老密码输入有误")
-		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
+		return ctx.Render(http.StatusOK, template, data)
 	}
 	if form.OldPass == form.NewPass {
 		data = tools.Flash(data, "success", "密码修改成功!")
-		return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
+		return ctx.Render(http.StatusOK, template, data)
 	}
 
 	user.SetPassword(form.NewPass)
 	as.db.Select("password", "updated_at").Save(&user)
 	data = tools.Flash(data, "success", "密码修改成功!")
-	return ctx.Render(http.StatusOK, "admin/users_update_password.html", data)
-	return nil
+	return ctx.Render(http.StatusOK, template, data)
 }
