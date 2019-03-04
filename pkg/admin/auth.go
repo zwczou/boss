@@ -47,7 +47,6 @@ func (as *adminServer) parseToken(ctx echo.Context) (userId int, err error) {
 
 func (as *adminServer) CheckLogin(isJson bool) echo.MiddlewareFunc {
 	renderer := as.echo.Renderer.(*md.Renderer)
-	println("+++++")
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(ctx echo.Context) error {
 			redirectUrl := fmt.Sprintf("/admin/login?next=%s", url.QueryEscape(ctx.Request().URL.String()))
